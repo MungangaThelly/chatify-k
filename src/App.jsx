@@ -2,8 +2,6 @@ import { Routes, Route, Navigate, Link } from 'react-router-dom'
 import Register from './pages/Register'
 import Login from './pages/Login'
 import Chat from './pages/Chat'
-//import SideNav from './components/SideNav'
-//import Navbar from './components/Navbar'
 import { useAuth } from './context/AuthContext'
 
 const PrivateRoute = ({ children }) => {

@@ -2,13 +2,13 @@ import axios from 'axios';
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
-// Create Axios instance
+// Skapar Axios instance
 const api = axios.create({
   baseURL: API_URL,
-  // Removed `withCredentials` since we’re using tokens now
+  // no `withCredentials` använder vi tokens nu
 });
 
-// Add interceptor to attach Authorization header to every request
+// interceptor bifogar Authorization header till varje request
 api.interceptors.request.use((config) => {
   const user = JSON.parse(localStorage.getItem('user'));
   const token = user?.token;

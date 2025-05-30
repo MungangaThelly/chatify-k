@@ -186,9 +186,8 @@ form button {
 
 form button:hover {
   background: #357ABD;
-}
+} 
 
-/* Media Queries for Mobile Adjustments */
 @media (max-width: 480px) {
   .auth-container {
     padding: 1.5rem;

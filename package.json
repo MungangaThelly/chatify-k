@@ -10,6 +10,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@sentry/react": "^9.24.0",
+    "@sentry/tracing": "^7.120.3",
     "axios": "^1.9.0",
     "jwt-decode": "^4.0.0",
     "react": "^19.1.0",

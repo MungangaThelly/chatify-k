@@ -35,17 +35,15 @@ const SideNav = () => {
       onMouseLeave={() => setIsExpanded(false)}
       onClick={() => setIsExpanded(true)}
     >
-      {/* 👤 User Info */}
       <div className="user-section">
         <img
           src={user.avatar || 'https://i.pravatar.cc/200'}
           alt="User avatar"
           className="user-avatar"
         />
-        <span className="user-name">{user.username}</span>
+        <span>{user?.username || 'Användarnamn saknas'}</span>
       </div>
 
-      {/* 🚪 Logout */}
       <button
         onClick={handleLogout}
         className="logout-btn"

@@ -48,10 +48,10 @@ const Login = () => {
         token: data.token
       }
 
-      // Save user to localStorage
+      // Spara user till localStorage
       localStorage.setItem('user', JSON.stringify(userData))
 
-      // Update context
+      // Uppdatera context
       setUser(userData)
 
       // Redirect

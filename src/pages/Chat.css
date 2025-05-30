@@ -9,21 +9,18 @@
   word-wrap: break-word;
 }
 
-/* Egna meddelanden – höger */
 .message.own {
   margin-left: auto;
   background-color: #dcf8c6;
   text-align: right;
 }
 
-/* Andras meddelanden – vänster */
 .message.other {
   margin-right: auto;
   background-color: #f1f0f0;
   text-align: left;
 }
 
-/* Delete-knapp */
 .message button {
   position: absolute;
   top: 6px;
@@ -35,7 +32,6 @@
   cursor: pointer;
 }
 
-/* I Chat.jsx */
 .chat-header .avatar {
   width: 48px;
   height: 48px;
