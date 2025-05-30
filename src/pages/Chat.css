@@ -1,0 +1,45 @@
+.message {
+  max-width: 50%;
+  margin-bottom: 12px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: relative;
+  word-wrap: break-word;
+}
+
+/* Egna meddelanden – höger */
+.message.own {
+  margin-left: auto;
+  background-color: #dcf8c6;
+  text-align: right;
+}
+
+/* Andras meddelanden – vänster */
+.message.other {
+  margin-right: auto;
+  background-color: #f1f0f0;
+  text-align: left;
+}
+
+/* Delete-knapp */
+.message button {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #c00;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* I Chat.jsx */
+.chat-header .avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  margin-right: 10px;
+  float: right;
+}
