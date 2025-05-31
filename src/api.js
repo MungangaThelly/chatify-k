@@ -46,6 +46,10 @@ export const getMessages = () => api.get('/messages');
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
+// Conversations
+export const getConversations = () => api.get('/conversations');
+
+
 // Users
 export const getUsers = (params) => api.get('/users', { params });
 export const getUser = (userId) => api.get(`/users/${userId}`);

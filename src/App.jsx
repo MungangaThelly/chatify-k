@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import Footer from './components/Footer'
+import Footer from './components/Footer';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -10,7 +10,7 @@ const App = () => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>; // Eller någon snyggare spinner
+    return <div>Loading...</div>; // Or a spinner
   }
 
   return (
@@ -32,7 +32,8 @@ const App = () => {
           path="*"
           element={<Navigate to={user ? "/chat" : "/login"} replace />}
         />
-      </Routes><Footer />
+      </Routes>
+      <Footer />
     </Router>
   );
 };

@@ -1,121 +1,199 @@
-import { useEffect, useState } from 'react';
-import { getMessages, createMessage, deleteMessage } from '../api';
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { getMessages, createMessage, deleteMessage, getConversations } from '../api';
 import { useAuth } from '../context/AuthContext';
 import SideNav from '../components/SideNav';
+import DOMPurify from 'dompurify';
 import './Chat.css';
 
+// Configure DOMPurify
+DOMPurify.addHook('uponSanitizeElement', (node, data) => {
+  if (node.hasAttribute('style')) node.removeAttribute('style');
+  if (data.tagName === 'a') {
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+  }
+});
+
 const Chat = () => {
-  const { user, setUser } = useAuth();
+  const { user } = useAuth();
   const [messages, setMessages] = useState([]);
+  const [conversations, setConversations] = useState([]);
+  const [activeConversation, setActiveConversation] = useState(null);
   const [newMsg, setNewMsg] = useState('');
   const [loading, setLoading] = useState(true);
-  const [conversationId, setConversationId] = useState(() => {
-    // Skapa eller hämta befintligt samtals-ID
-    const savedId = sessionStorage.getItem('conversationId');
-    if (savedId) return savedId;
+  const [error, setError] = useState(null);
+  const [isSending, setIsSending] = useState(false);
+  const messagesEndRef = useRef(null);
 
-    const newId = crypto.randomUUID();
-    sessionStorage.setItem('conversationId', newId);
-    return newId;
-  });
+  // Initialize conversations
+  useEffect(() => {
+    const initializeConversations = async () => {
+      try {
+        const res = await getConversations(user.id);
+        if (res.data.length === 0) {
+          // Create initial conversations if none exist
+          const initialConvs = [
+            { id: crypto.randomUUID(), title: 'General Chat' },
+            { id: crypto.randomUUID(), title: 'Support' }
+          ];
+          setConversations(initialConvs);
+          setActiveConversation(initialConvs[0].id);
+          sessionStorage.setItem('conversationId', initialConvs[0].id);
+        } else {
+          setConversations(res.data);
+          setActiveConversation(res.data[0].id);
+        }
+      } catch (err) {
+        console.error('Failed to load conversations:', err);
+      }
+    };
+
+    initializeConversations();
+  }, [user.id]);
+
+  // Fetch messages when active conversation changes
+  const fetchMessages = useCallback(async () => {
+    if (!activeConversation) return;
+    
+    const controller = new AbortController();
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await getMessages(activeConversation, { signal: controller.signal });
+      
+      const sanitizedMessages = res.data.map(msg => ({
+        ...msg,
+        text: DOMPurify.sanitize(msg.text)
+      }));
+      
+      setMessages(sanitizedMessages);
+    } catch (err) {
+      if (err.name !== 'AbortError') {
+        console.error('Failed to fetch messages:', err);
+        setError('Could not load messages. Please try again.');
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setLoading(false);
+      }
+    }
+
+    return () => controller.abort();
+  }, [activeConversation]);
 
   useEffect(() => {
     fetchMessages();
-  }, [conversationId]); // Uppdatera om samtals-ID ändras
+    const interval = setInterval(fetchMessages, 30000);
+    return () => clearInterval(interval);
+  }, [fetchMessages]);
 
   useEffect(() => {
-    const container = document.querySelector('.messages-list');
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
-
-  const fetchMessages = async () => {
-    try {
-      setLoading(true);
-      const res = await getMessages(conversationId);
-      setMessages(res.data);
-    } catch (err) {
-      console.error('Kunde inte hämta meddelanden:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const sanitize = (str) =>
-    str.replace(/</g, '&lt;').replace(/>/g, '&gt;');
 
   const handleSend = async (e) => {
     e.preventDefault();
     const trimmed = newMsg.trim();
-    if (!trimmed) return;
+    if (!trimmed || isSending) return;
 
     try {
-      await createMessage({ text: sanitize(trimmed), conversationId });
+      setIsSending(true);
+      await createMessage({ 
+        text: DOMPurify.sanitize(trimmed), 
+        conversationId: activeConversation,
+        userId: user.id 
+      });
       setNewMsg('');
-      fetchMessages();
+      await fetchMessages();
     } catch (err) {
-      console.error('Kunde inte skicka meddelande:', err);
+      console.error('Failed to send message:', err);
+      setError('Could not send message. Please try again.');
+    } finally {
+      setIsSending(false);
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this message?')) return;
+    
     try {
-      await deleteMessage(id, conversationId);
-      fetchMessages();
+      await deleteMessage(id, activeConversation);
+      await fetchMessages();
     } catch (err) {
-      console.error('Kunde inte ta bort meddelande:', err);
+      console.error('Failed to delete message:', err);
+      setError('Could not delete message. Please try again.');
     }
+  };
+
+  const switchConversation = (convId) => {
+    setActiveConversation(convId);
+    sessionStorage.setItem('conversationId', convId);
   };
 
   return (
     <div className="chat-container">
-      <SideNav user={user} setUser={setUser} />
+      <SideNav />
 
       <div className="chat-content">
+        <div className="conversation-selector">
+          {conversations.map(conv => (
+            <button
+              key={conv.id}
+              className={`conv-btn ${activeConversation === conv.id ? 'active' : ''}`}
+              onClick={() => switchConversation(conv.id)}
+            >
+              {conv.title}
+            </button>
+          ))}
+        </div>
+
         <div className="chat-header">
-          <img src={user.avatar} alt={user.username} className="avatar" />
-          <span>{user.username}</span>
+          <span>Chat: {conversations.find(c => c.id === activeConversation)?.title}</span>
+          <span className="conversation-id">ID: {activeConversation}</span>
         </div>
+          <div className="chat-messages">
+            {loading ? (
+              <p>Loading messages...</p>
+            ) : error ? (
+              <p className="error">{error}</p>
+            ) : messages.length === 0 ? (
+              <p>No messages yet.</p>
+            ) : (
+              messages.map(msg => {
+                const isOwnMessage = msg.userId === user.id;
+                return (
+                  <div
+                    key={msg.id}
+                    className={`chat-message ${isOwnMessage ? 'own' : 'other'}`}
+                  >
+                    <div className="msg-header">
+                      <strong>{isOwnMessage ? 'You' : msg.user?.username || 'Anonymous'}:</strong>
+                      {isOwnMessage && (
+                        <button className="delete-btn" onClick={() => handleDelete(msg.id)}>Delete</button>
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: msg.text }} />
+                  </div>
+                );
+              })
+            )}
+            <div ref={messagesEndRef} />
+          </div>
 
-        <div className="messages-list">
-          {loading ? (
-            <p>Laddar meddelanden...</p>
-          ) : (
-            messages.map((msg) => {
-              const isOwn = msg.userId === user.id;
-              return (
-                <div
-                  key={msg.id}
-                  className={`message-bubble ${isOwn ? 'own' : 'other'}`}
-                >
-                  <p>{msg.text}</p>
-                  {isOwn && (
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDelete(msg.id)}
-                    >
-                      🗑️
-                    </button>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
 
-        <form onSubmit={handleSend} className="message-form">
-          <input
-            type="text"
-            placeholder="Skriv ett meddelande..."
-            value={newMsg}
-            onChange={(e) => setNewMsg(e.target.value)}
-            disabled={loading}
-          />
-          <button type="submit" disabled={loading || !newMsg.trim()}>
-            Skicka
-          </button>
-        </form>
+          <form className="chat-input-form" onSubmit={handleSend}>
+              <input
+                type="text"
+                value={newMsg}
+                onChange={(e) => setNewMsg(e.target.value)}
+                placeholder="Type your message..."
+                className="chat-input"
+              />
+              <button type="submit" className="send-button" disabled={isSending}>
+                {isSending ? 'Sending...' : 'Send'}
+              </button>
+          </form>
+
       </div>
     </div>
   );

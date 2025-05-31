@@ -3,14 +3,12 @@ import { FaSignOutAlt, FaUser, FaComments } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './SideNav.css';
 
-const SideNav = () => {
-  const { user, setUser } = useAuth();
+const SideNav = ({ activeItem }) => {
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    setUser(null);
+    logout();
     navigate('/login', { replace: true });
   };
 
@@ -24,19 +22,19 @@ const SideNav = () => {
       </div>
 
       <div className="sidenav-links">
-        <Link to="/chat">
+        <Link to="/profile" className={`nav-link ${activeItem === 'profile' ? 'active' : ''}`}>
+          <FaUser className="icon" />
+          Profile
+        </Link>
+
+        <Link to="/chat" className={`nav-link ${activeItem === 'chat' ? 'active' : ''}`}>
           <FaComments className="icon" />
           Chat
         </Link>
 
-        <Link to="/profile">
-          <FaUser className="icon" />
-          Profil
-        </Link>
-
         <button className="logout-btn" onClick={handleLogout}>
           <FaSignOutAlt className="icon" />
-          Logga ut
+          Logout
         </button>
       </div>
     </nav>

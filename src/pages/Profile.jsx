@@ -1,102 +1,162 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { updateProfile, deleteUser } from '../api';
-import { useNavigate } from 'react-router-dom';
+import { updateUser, deleteUser } from '../api';
+import SideNav from '../components/SideNav';
 import './Profile.css';
 
 const Profile = () => {
-  const { user, setUser } = useAuth();
-  const navigate = useNavigate();
-
-  const [username, setUsername] = useState(user.username || '');
-  const [email, setEmail] = useState(user.email || '');
-  const [avatarUrl, setAvatarUrl] = useState(user.avatar || '');
-  const [avatarFile, setAvatarFile] = useState(null);
+  const { user, setUser, logout } = useAuth();
+  const [formData, setFormData] = useState({
+    username: '',
+    email: '',
+    avatar: ''
+  });
+  const [avatarPreview, setAvatarPreview] = useState('');
+  const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleAvatarChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setAvatarFile(file);
-      const reader = new FileReader();
-      reader.onloadend = () => setAvatarUrl(reader.result);
-      reader.readAsDataURL(file);
+  // Initialize form data
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        username: user.username || '',
+        email: user.email || '',
+        avatar: user.avatar || ''
+      });
+      setAvatarPreview(user.avatar || '');
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === 'avatar') {
+      setAvatarPreview(value);
     }
   };
 
-  const handleSave = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setError('');
 
     try {
-      const formData = new FormData();
-      formData.append('username', username);
-      formData.append('email', email);
-      if (avatarFile) {
-        formData.append('avatar', avatarFile);
-      }
-
-      const updated = await updateProfile(formData);
-      setUser(updated.data);
-      alert('Profilen uppdaterad!');
+      const updatedUser = await updateUser(user.id, formData);
+      setUser(updatedUser.data);
+      setIsEditing(false);
     } catch (err) {
-      console.error('Kunde inte uppdatera profil:', err);
-      alert('Ett fel uppstod vid uppdatering.');
+      setError(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm('Är du säker på att du vill radera ditt konto?');
-    if (!confirmed) return;
+    if (!window.confirm(
+      'Are you sure you want to delete your account? This action cannot be undone. ' +
+      'All your data will be permanently removed.'
+    )) return;
 
     try {
-      await deleteUser();
-      setUser(null);
-      navigate('/login');
+      setLoading(true);
+      await deleteUser(user.id);
+      logout();
+      window.location.href = '/login';
     } catch (err) {
-      console.error('Kunde inte radera konto:', err);
-      alert('Kunde inte radera kontot.');
+      setError(err.response?.data?.message || 'Failed to delete account');
+      setLoading(false);
     }
   };
 
   return (
     <div className="profile-container">
-      <h2>Min Profil</h2>
+      <SideNav activeItem="profile" />
 
-      <form onSubmit={handleSave} className="profile-form">
-        <label>Användarnamn</label>
-        <input
-          type="text"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
+      <div className="profile-content">
+        <h1>Profile Settings</h1>
+        
+        {error && <div className="error-message">{error}</div>}
 
-        <label>E-post</label>
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <label>Byt avatar</label>
-        <input type="file" accept="image/*" onChange={handleAvatarChange} />
-
-        {avatarUrl && (
+        <div className="profile-section">
           <div className="avatar-preview">
-            <img src={avatarUrl} alt="Avatar Preview" />
+            <img 
+              src={avatarPreview || 'https://i.pravatar.cc/200'} 
+              alt="Avatar Preview"
+              onError={(e) => {
+                e.target.src = 'https://i.pravatar.cc/200';
+              }}
+            />
           </div>
-        )}
 
-        <button type="submit" disabled={loading}>
-          {loading ? 'Sparar...' : 'Spara ändringar'}
-        </button>
-      </form>
+          {isEditing ? (
+            <form onSubmit={handleSubmit}>
+              <div className="form-group">
+                <label>Username</label>
+                <input
+                  type="text"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
 
-      <button className="delete-btn" onClick={handleDeleteAccount}>
-        🗑️ Radera konto
-      </button>
+              <div className="form-group">
+                <label>Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Avatar URL</label>
+                <input
+                  type="url"
+                  name="avatar"
+                  value={formData.avatar}
+                  onChange={handleChange}
+                  placeholder="https://example.com/avatar.jpg"
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="button" onClick={() => setIsEditing(false)} disabled={loading}>
+                  Cancel
+                </button>
+                <button type="submit" disabled={loading}>
+                  {loading ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <div className="profile-info">
+              <p><strong>Username:</strong> {user?.username}</p>
+              <p><strong>Email:</strong> {user?.email}</p>
+              <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+            </div>
+          )}
+        </div>
+
+        <div className="danger-zone">
+          <h2>Danger Zone</h2>
+          <button 
+            className="delete-btn"
+            onClick={handleDeleteAccount}
+            disabled={loading}
+          >
+            {loading ? 'Deleting...' : 'Delete My Account'}
+          </button>
+          <p className="warning-text">
+            This will permanently delete your account and all associated data.
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
