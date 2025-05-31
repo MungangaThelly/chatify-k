@@ -1,34 +1,40 @@
-import { Routes, Route, Navigate, Link } from 'react-router-dom'
-import Register from './pages/Register'
-import Login from './pages/Login'
-import Chat from './pages/Chat'
-import { useAuth } from './context/AuthContext'
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import Footer from './components/Footer'
 
-const PrivateRoute = ({ children }) => {
-  const { user, loading } = useAuth()
-  if (loading) return <p>Loading...</p>
-  return user ? children : <Navigate to="/login" />
-}
+import Login from './pages/Login';
+import Register from './pages/Register';
+import Chat from './pages/Chat';
 
-function App() {
+const App = () => {
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>; // Eller någon snyggare spinner
+  }
+
   return (
-    <>
+    <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/chat" />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Route
+          path="/login"
+          element={!user ? <Login /> : <Navigate to="/chat" replace />}
+        />
+        <Route
+          path="/register"
+          element={!user ? <Register /> : <Navigate to="/chat" replace />}
+        />
         <Route
           path="/chat"
-          element={
-            <PrivateRoute>
-              <Chat />
-            </PrivateRoute>
-          }
+          element={user ? <Chat /> : <Navigate to="/login" replace />}
         />
-        <Route path="*" element={<p>Not found</p>} />
-      </Routes>
-    </>
-  )
-}
+        <Route
+          path="*"
+          element={<Navigate to={user ? "/chat" : "/login"} replace />}
+        />
+      </Routes><Footer />
+    </Router>
+  );
+};
 
-export default App
+export default App;

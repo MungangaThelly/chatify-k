@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
       const userData = {
         id: decoded.id,
         username: decoded.username,
-        avatar: decoded.avatar,
+        avatar: decoded.avatar || 'https://i.pravatar.cc/200',
       };
 
       localStorage.setItem('token', res.data.token);
@@ -33,10 +33,11 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (err) {
-      return {
-        success: false,
-        error: err.response?.data?.message || 'Login failed',
-      };
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Login failed';
+      return { success: false, error: errorMsg };
     }
   };
 
@@ -45,10 +46,11 @@ export const AuthProvider = ({ children }) => {
       await registerUser(data);
       return { success: true };
     } catch (err) {
-      return {
-        success: false,
-        error: err.response?.data?.message || 'Registration failed',
-      };
+      const errorMsg =
+        err.response?.data?.message ||
+        err.message ||
+        'Registration failed';
+      return { success: false, error: errorMsg };
     }
   };
 

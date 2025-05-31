@@ -1,22 +1,17 @@
 import axios from 'axios';
+import { getToken } from './utils/auth.js'; // justera path om filstruktur är annorlunda
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
-// Skapar Axios instance
 const api = axios.create({
   baseURL: API_URL,
-  // no `withCredentials` använder vi tokens nu
 });
 
-// interceptor bifogar Authorization header till varje request
 api.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const token = user?.token;
-
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 });
 
@@ -25,15 +20,24 @@ api.interceptors.response.use(
   err => {
     if (err.response?.status === 401) {
       localStorage.removeItem('user');
+      localStorage.removeItem('token');
       window.location.href = '/login';
     }
     return Promise.reject(err);
   }
 );
 
+const csrfApi = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
+export const getCsrfToken = async () => {
+  const res = await csrfApi.patch('/csrf');
+  return res.data.csrfToken;
+};
 
-// Authentication
+// Auth
 export const registerUser = (data) => api.post('/auth/register', data);
 export const loginUser = (data) => api.post('/auth/token', data);
 

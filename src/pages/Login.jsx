@@ -1,67 +1,42 @@
-import { useState } from 'react'
-import { useNavigate, Link } from 'react-router-dom'
-import { jwtDecode } from 'jwt-decode'
-import { useAuth } from '../context/AuthContext'
-//import './Login.css'
+import { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
-  const { setUser } = useAuth()
-  const navigate = useNavigate()
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     username: '',
-    password: ''
-  })
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+    password: '',
+  });
 
-  const handleChange = e => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }))
-  }
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async e => {
-    e.preventDefault()
-    setError('')
-    setLoading(true)
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
 
-    try {
-      const response = await fetch('https://chatify-api.up.railway.app/auth/token', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-      const data = await response.json()
+    const result = await login(formData);
 
-      if (!response.ok) {
-        // Fångar specifikt "Invalid credentials"
-        setError(data.message || 'Fel användarnamn eller lösenord')
-        return
-      }
-
-      // Decode JWT
-      const decoded = jwtDecode(data.token)
-
-      const userData = {
-        id: decoded.id,
-        username: decoded.username,
-        avatar: decoded.avatar || 'https://i.pravatar.cc/200',
-        token: data.token
-      }
-
-      // Spara user till localStorage
-      localStorage.setItem('user', JSON.stringify(userData))
-
-      // Uppdatera context
-      setUser(userData)
-
-      // Redirect
-      navigate('/chat', { replace: true })
-    } catch (err) {
-      setError('Något gick fel. Kontrollera din uppkoppling.')
-    } finally {
-      setLoading(false)
+    if (result.success) {
+      navigate('/chat', { replace: true });
+    } else {
+      // Visa specifikt felmeddelande från API:t, t.ex. "Invalid credentials"
+      setError(result.error);
     }
-  }
+
+    setLoading(false);
+  };
 
   return (
     <div className="auth-container">
@@ -69,7 +44,7 @@ const Login = () => {
 
       {error && <p className="error">⚠️ {error}</p>}
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} autoComplete="on">
         <input
           id="username"
           name="username"
@@ -98,7 +73,7 @@ const Login = () => {
         Har du inget konto? <Link to="/register">Registrera dig här</Link>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;
