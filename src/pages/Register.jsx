@@ -8,8 +8,8 @@ const Register = () => {
 
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
     password: '',
+    email: '',
     avatar: 'https://i.pravatar.cc/200'
   });
 
@@ -59,17 +59,6 @@ const Register = () => {
           disabled={loading}
         />
         <input
-          id="email"
-          name="email"
-          type="email"
-          placeholder="E-post"
-          required
-          onChange={handleChange}
-          value={formData.email}
-          autoComplete="email"
-          disabled={loading}
-        />
-        <input
           id="password"
           name="password"
           type="password"
@@ -78,6 +67,17 @@ const Register = () => {
           onChange={handleChange}
           value={formData.password}
           autoComplete="new-password"
+          disabled={loading}
+        />
+        <input
+          id="email"
+          name="email"
+          type="email"
+          placeholder="E-post"
+          required
+          onChange={handleChange}
+          value={formData.email}
+          autoComplete="email"
           disabled={loading}
         />
         <button type="submit" disabled={loading}>

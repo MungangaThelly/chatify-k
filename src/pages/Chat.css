@@ -1,227 +1,148 @@
-/* Grundlayout */
+/* Add these styles to your existing Chat.css */
+
 .chat-container {
   display: flex;
   height: 100vh;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f0f2f5;
-  overflow: hidden;
+  background-color: var(--light-gray);
+  position: relative; /* Add this */
 }
 
-/* Sidomeny (SideNav) */
-.SideNav {
-  width: 220px;
-  background-color: #2c3e50;
-  color: white;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Huvudinnehåll */
 .chat-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 1rem 1.5rem;
-  background: white;
-  box-shadow: -4px 0 10px rgba(0,0,0,0.1);
+  height: 100vh; /* Add this */
+  overflow: hidden; /* Add this */
 }
 
-/* Konversationsval */
-.conversation-selector {
-  display: flex;
-  gap: 0.7rem;
-  margin-bottom: 1rem;
-  flex-wrap: wrap;
-}
-
-.conv-btn {
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 20px;
-  background-color: #e1e5ea;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  font-weight: 600;
-}
-
-.conv-btn:hover {
-  background-color: #d0d5db;
-}
-
-.conv-btn.active {
-  background-color: #3b82f6;
-  color: white;
-}
-
-/* Chat header */
-.chat-header {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: #333;
-  margin-bottom: 1rem;
-}
-
-/* Meddelandelista */
-.chat-messages {
+.messages-container {
   flex: 1;
   overflow-y: auto;
-  padding-right: 1rem;
+  padding: 1rem;
+  background-color: var(--light-gray);
+  /* Remove any fixed height if present */
+}
+
+.message-form {
+  display: flex;
+  padding: 1rem;
+  background-color: var(--white);
+  border-top: 1px solid var(--medium-gray);
+  position: sticky; /* Add this */
+  bottom: 0; /* Add this */
+  z-index: 10; /* Add this */
+}
+
+/* Footer styles - add this if you want a footer */
+.chat-footer {
+  text-align: center;
+  padding: 0.5rem;
+  background-color: var(--white);
+  border-top: 1px solid var(--medium-gray);
+  font-size: 0.8rem;
+  color: var(--dark-gray);
+}
+
+
+/* MESSAGES LIST */
+.messages-list {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  gap: 1rem;
+  padding: 1rem;
 }
 
-/* Scrollbar styling (för Firefox och WebKit) */
-.chat-messages::-webkit-scrollbar {
-  width: 6px;
-}
-.chat-messages::-webkit-scrollbar-thumb {
-  background-color: #a0aec0;
-  border-radius: 3px;
-}
-
-/* Meddelandebubbla */
-.chat-message {
-  max-width: 70%;
-  padding: 0.6rem 1rem;
-  border-radius: 20px;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);
-  word-wrap: break-word;
-  font-size: 0.95rem;
-  position: relative;
-}
-
-/* Egna meddelanden (höger) */
-.chat-message.own {
-  align-self: flex-end;
-  background-color: #dcf8c6;
-  color: #222;
-  text-align: right;
-}
-
-/* Andras meddelanden (vänster) */
-.chat-message.other {
-  align-self: flex-start;
-  background-color: #f1f0f0;
-  color: #333;
-  text-align: left;
-}
-
-/* Meddelandehuvud (användarnamn och delete-knapp) */
-.msg-header {
+/* MESSAGE CONTAINER */
+.message {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  max-width: 75%;
+}
+
+/* RIGHT-ALIGNED (USER'S MESSAGES) */
+.message-right {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.message-right .message-bubble {
+  background-color: #4361ee;
+  color: white;
+  border-radius: 18px 18px 0 18px;
+}
+
+/* LEFT-ALIGNED (FAKE USER'S MESSAGES) */
+.message-left {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.message-left .message-bubble {
+  background-color: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 18px 18px 18px 0;
+}
+
+/* MESSAGE BUBBLE */
+.message-bubble {
+  padding: 12px 16px;
+  position: relative;
+  word-wrap: break-word;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* MESSAGE SENDER NAME */
+.message-sender {
+  font-weight: bold;
   font-size: 0.8rem;
-  font-weight: 600;
-  margin-bottom: 0.25rem;
+  margin-bottom: 4px;
   color: #555;
 }
 
-/* Delete-knapp */
-.delete-btn {
-  background: transparent;
-  border: none;
-  color: #e53e3e;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: color 0.3s ease;
-}
-
-.delete-btn:hover {
-  color: #9b2c2c;
-}
-
-/* Input-form och knapp */
-.chat-input-form {
+/* MESSAGE METADATA */
+.message-meta {
   display: flex;
-  padding-top: 0.5rem;
-  border-top: 1px solid #ddd;
+  justify-content: flex-end;
+  align-items: center;
+  margin-top: 8px;
+  font-size: 0.75rem;
 }
 
-.chat-input {
-  flex: 1;
-  padding: 0.75rem 1rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 25px;
-  outline: none;
-  transition: border-color 0.3s ease;
+.message-right .message-meta {
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.chat-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+.message-left .message-meta {
+  color: #888;
 }
 
-.send-button {
-  margin-left: 0.75rem;
-  background-color: #3b82f6;
-  color: white;
+.message-time {
+  margin-right: 8px;
+}
+
+.message-delete {
+  background: none;
   border: none;
-  padding: 0 1.5rem;
-  border-radius: 25px;
+  color: inherit;
   cursor: pointer;
-  font-weight: 700;
-  transition: background-color 0.3s ease;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+  padding: 0;
 }
 
-.send-button:disabled {
-  background-color: #a5b4fc;
-  cursor: not-allowed;
+.message-delete:hover {
+  opacity: 1;
 }
 
-.send-button:hover:not(:disabled) {
-  background-color: #2563eb;
-}
-
-/* Responsivitet */
-
-/* Mindre skärmar (mobil) */
+/* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 768px) {
-  .chat-container {
-    flex-direction: column;
-  }
-
-  .SideNav {
-    width: 100%;
-    flex-direction: row;
-    overflow-x: auto;
-    padding: 0.5rem;
-  }
-
-  .chat-content {
-    padding: 0.5rem 1rem;
-    height: calc(100vh - 50px);
-  }
-
-  .conversation-selector {
-    justify-content: center;
-  }
-
-  .chat-messages {
-    padding-right: 0.5rem;
-    gap: 0.5rem;
-  }
-
-  .chat-message {
+  .message {
     max-width: 85%;
-    font-size: 0.9rem;
-  }
-
-  .chat-input {
-    font-size: 0.9rem;
   }
 }
 
-/* Extra stor skärm */
-@media (min-width: 1200px) {
-  .chat-content {
-    max-width: 900px;
-    margin: 0 auto;
+@media (max-width: 480px) {
+  .message {
+    max-width: 90%;
   }
 }

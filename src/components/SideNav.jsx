@@ -24,17 +24,17 @@ const SideNav = ({ activeItem }) => {
       <div className="sidenav-links">
         <Link to="/profile" className={`nav-link ${activeItem === 'profile' ? 'active' : ''}`}>
           <FaUser className="icon" />
-          Profile
+          <span>Profile</span>
         </Link>
 
         <Link to="/chat" className={`nav-link ${activeItem === 'chat' ? 'active' : ''}`}>
           <FaComments className="icon" />
-          Chat
+          <span>Chat</span>
         </Link>
 
         <button className="logout-btn" onClick={handleLogout}>
           <FaSignOutAlt className="icon" />
-          Logout
+          <span>Logout</span>
         </button>
       </div>
     </nav>

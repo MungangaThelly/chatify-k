@@ -16,7 +16,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Initialize form data
+  // Initialisera form data
   useEffect(() => {
     if (user) {
       setFormData({

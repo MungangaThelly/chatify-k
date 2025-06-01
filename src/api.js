@@ -38,19 +38,33 @@ export const getCsrfToken = async () => {
 };
 
 // Auth
-export const registerUser = (data) => api.post('/auth/register', data);
-export const loginUser = (data) => api.post('/auth/token', data);
+export const registerUser = (data) => {
+  return axios.post(`${API_URL}/auth/register`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
 
-// Messages
+
+export const loginUser = (data) => {
+  return axios.post(`${API_URL}/auth/token`, data, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+};
+
+// Meddelanden
 export const getMessages = () => api.get('/messages');
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
-// Conversations
+// Konversations
 export const getConversations = () => api.get('/conversations');
 
 
-// Users
+// Användarna
 export const getUsers = (params) => api.get('/users', { params });
 export const getUser = (userId) => api.get(`/users/${userId}`);
 export const updateUser = (data) => api.put('/user', data);
