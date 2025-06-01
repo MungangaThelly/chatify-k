@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { loginUser, registerUser } from '../api';
+import { loginUser, registerUser, getUser } from '../api';
 import { jwtDecode } from 'jwt-decode';
 
 const AuthContext = createContext();
@@ -27,23 +27,38 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Initialize auth state
   useEffect(() => {
-    const initializeAuth = async () => {
-      const token = localStorage.getItem('token');
-      
-      if (token) {
-        const decoded = validateToken(token);
-        if (decoded) {
-          const storedUser = localStorage.getItem('user');
-          setUser(storedUser ? JSON.parse(storedUser) : null);
+  const initializeAuth = async () => {
+    const token = localStorage.getItem('token');
+    
+    if (token) {
+      const decoded = validateToken(token);
+      if (decoded) {
+        try {
+          const res = await getUser(decoded.id);
+          if (Array.isArray(res.data)) {
+            setUser(res.data[0]);
+            localStorage.setItem('user', JSON.stringify(res.data[0]));
+          } else {
+            setUser(res.data);
+            localStorage.setItem('user', JSON.stringify(res.data));
+          }
+        } catch {
+          setUser(null);
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
         }
       }
-      setLoading(false);
-    };
+    } else {
+      const storedUser = localStorage.getItem('user');
+      setUser(storedUser ? JSON.parse(storedUser) : null);
+    }
+    setLoading(false);
+  };
 
-    initializeAuth();
-  }, [validateToken]);
+  initializeAuth();
+}, [validateToken]);
+
 
   const login = async (credentials) => {
     setLoading(true);
