@@ -52,7 +52,7 @@ export const registerUser = async ({ username, password, email, avatar }) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, // Needed if cookies/session are used
+    withCredentials: true, // Behövs om cookies/session används
   });
 };
 
@@ -68,7 +68,7 @@ export const loginUser = async ({ username, password }) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    withCredentials: true, // important if backend sets cookies
+    withCredentials: true, // viktigt om backend sätter cookies
   });
 };
 

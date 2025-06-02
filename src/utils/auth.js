@@ -1,4 +1,4 @@
-// utils/auth.js
+// hämta en autentiseringstoken
 
 export const getToken = () => {
   const token = localStorage.getItem('token');

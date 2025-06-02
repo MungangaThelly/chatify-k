@@ -109,10 +109,10 @@ const Login = () => {
           {formLoading ? (
             <>
               <span className="spinner" aria-hidden="true"></span>
-              <span>Loggar in...</span>
+              <span>Loggar in ...</span>
             </>
           ) : (
-            'Logga in'
+            'Logga in och  låt oss chatta!'
           )}
         </button>
       </form>

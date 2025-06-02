@@ -64,13 +64,12 @@ const Chat = () => {
     // Simulate response after a delay
     setTimeout(() => {
       const responses = [
-        "I understand your question.",
-        "Let me check that for you.",
-        "That's a good point!",
-        "Please, provide mode details?",
-        "We'll look into this issue.",
-        "Keep in touch, so long!",
-        "Thanks for your feedback!"
+        "Here we are.","We did it.","Really — made it.","Through the noise, the doubt,","the days we almost quit."
+        ,"But we didn't.","Congratulations, genius.","(Not for being perfect but for staying.)","See?","It’s just a game.",
+        "You win some, you learn some.","Play it.","Have fun.","Don’t forget to laugh when it all feels too heavy.",
+        "Especially then.","This is it — Life.","Not the plan.","Not the past.","Just this breath.","This moment.",
+        "Us, here.","And that’s enough.","I understand your question.","Let me check that for you.","That's a good point!",
+        "Please, provide mode details?","We'll look into this issue.","Keep in touch, so long!","Thanks for your feedback!"
       ];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
       

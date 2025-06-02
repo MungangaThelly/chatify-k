@@ -135,7 +135,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Custom hook for accessing auth context
+// hook för åtkomst till auth-kontext
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

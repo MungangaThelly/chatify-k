@@ -1,18 +1,16 @@
-/* Add these styles to your existing Chat.css */
-
 .chat-container {
   display: flex;
   height: 100vh;
   background-color: var(--light-gray);
-  position: relative; /* Add this */
+  position: relative; 
 }
 
 .chat-content {
   flex: 1;
   display: flex;
   flex-direction: column;
-  height: 100vh; /* Add this */
-  overflow: hidden; /* Add this */
+  height: 100vh; 
+  overflow: hidden; 
 }
 
 .messages-container {
@@ -20,7 +18,6 @@
   overflow-y: auto;
   padding: 1rem;
   background-color: var(--light-gray);
-  /* Remove any fixed height if present */
 }
 
 .message-form {
@@ -28,12 +25,11 @@
   padding: 1rem;
   background-color: var(--white);
   border-top: 1px solid var(--medium-gray);
-  position: sticky; /* Add this */
-  bottom: 0; /* Add this */
-  z-index: 10; /* Add this */
+  position: sticky; 
+  bottom: 0; 
+  z-index: 10; 
 }
 
-/* Footer styles - add this if you want a footer */
 .chat-footer {
   text-align: center;
   padding: 0.5rem;
@@ -44,7 +40,6 @@
 }
 
 
-/* MESSAGES LIST */
 .messages-list {
   display: flex;
   flex-direction: column;
@@ -52,14 +47,12 @@
   padding: 1rem;
 }
 
-/* MESSAGE CONTAINER */
 .message {
   display: flex;
   flex-direction: column;
   max-width: 75%;
 }
 
-/* RIGHT-ALIGNED (USER'S MESSAGES) */
 .message-right {
   align-self: flex-end;
   align-items: flex-end;
@@ -71,7 +64,6 @@
   border-radius: 18px 18px 0 18px;
 }
 
-/* LEFT-ALIGNED (FAKE USER'S MESSAGES) */
 .message-left {
   align-self: flex-start;
   align-items: flex-start;
@@ -83,7 +75,6 @@
   border-radius: 18px 18px 18px 0;
 }
 
-/* MESSAGE BUBBLE */
 .message-bubble {
   padding: 12px 16px;
   position: relative;
@@ -91,7 +82,6 @@
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* MESSAGE SENDER NAME */
 .message-sender {
   font-weight: bold;
   font-size: 0.8rem;
@@ -99,7 +89,6 @@
   color: #555;
 }
 
-/* MESSAGE METADATA */
 .message-meta {
   display: flex;
   justify-content: flex-end;
@@ -148,7 +137,6 @@
 
 
 
-/* RESPONSIVE ADJUSTMENTS */
 @media (max-width: 768px) {
   .message {
     max-width: 85%;
