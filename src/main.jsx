@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import * as Sentry from '@sentry/react';
-import './index.css'; 
+//import './index.css';
 import { AuthProvider } from './context/AuthContext'; // om du använder context
 
 Sentry.init({

@@ -15,8 +15,8 @@ const Profile = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
 
-  // Initialisera form data
   useEffect(() => {
     if (user) {
       setFormData({
@@ -31,7 +31,7 @@ const Profile = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    
+
     if (name === 'avatar') {
       setAvatarPreview(value);
     }
@@ -41,11 +41,24 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setSuccess('');
+
+    const isFormUnchanged =
+      formData.username === user.username &&
+      formData.email === user.email &&
+      formData.avatar === user.avatar;
+
+    if (isFormUnchanged) {
+      setIsEditing(false);
+      setLoading(false);
+      return;
+    }
 
     try {
       const updatedUser = await updateUser(user.id, formData);
       setUser(updatedUser.data);
       setIsEditing(false);
+      setSuccess('Profile updated successfully.');
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to update profile');
     } finally {
@@ -54,15 +67,17 @@ const Profile = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (!window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone. ' +
-      'All your data will be permanently removed.'
-    )) return;
+    if (
+      !window.confirm(
+        'Are you sure you want to delete your account? This action cannot be undone. All your data will be permanently removed.'
+      )
+    )
+      return;
 
     try {
       setLoading(true);
       await deleteUser(user.id);
-      logout();
+      await logout();
       window.location.href = '/login';
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to delete account');
@@ -76,13 +91,14 @@ const Profile = () => {
 
       <div className="profile-content">
         <h1>Profile Settings</h1>
-        
+
         {error && <div className="error-message">{error}</div>}
+        {success && <div className="success-message">{success}</div>}
 
         <div className="profile-section">
           <div className="avatar-preview">
-            <img 
-              src={avatarPreview || 'https://i.pravatar.cc/200'} 
+            <img
+              src={avatarPreview || 'https://i.pravatar.cc/200'}
               alt="Avatar Preview"
               onError={(e) => {
                 e.target.src = 'https://i.pravatar.cc/200';
@@ -93,35 +109,44 @@ const Profile = () => {
           {isEditing ? (
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Username</label>
+                <label htmlFor="username">Username</label>
                 <input
+                  id="username"
                   type="text"
                   name="username"
                   value={formData.username}
                   onChange={handleChange}
                   required
+                  disabled={loading}
+                  autoComplete="username"
                 />
               </div>
 
               <div className="form-group">
-                <label>Email</label>
+                <label htmlFor="email">Email</label>
                 <input
+                  id="email"
                   type="email"
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
                   required
+                  disabled={loading}
+                  autoComplete="email"
                 />
               </div>
 
               <div className="form-group">
-                <label>Avatar URL</label>
+                <label htmlFor="avatar">Avatar URL</label>
                 <input
+                  id="avatar"
                   type="url"
                   name="avatar"
                   value={formData.avatar}
                   onChange={handleChange}
                   placeholder="https://example.com/avatar.jpg"
+                  disabled={loading}
+                  autoComplete="url"
                 />
               </div>
 
@@ -138,14 +163,16 @@ const Profile = () => {
             <div className="profile-info">
               <p><strong>Username:</strong> {user?.username}</p>
               <p><strong>Email:</strong> {user?.email}</p>
-              <button onClick={() => setIsEditing(true)}>Edit Profile</button>
+              <button onClick={() => setIsEditing(true)} disabled={loading}>
+                Edit Profile
+              </button>
             </div>
           )}
         </div>
 
         <div className="danger-zone">
           <h2>Danger Zone</h2>
-          <button 
+          <button
             className="delete-btn"
             onClick={handleDeleteAccount}
             disabled={loading}

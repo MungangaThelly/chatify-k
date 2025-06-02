@@ -34,26 +34,44 @@ const csrfApi = axios.create({
 
 export const getCsrfToken = async () => {
   const res = await csrfApi.patch('/csrf');
-  return res.data.csrfToken;
+  return res.data;
 };
 
 // Auth
-export const registerUser = (data) => {
-  return axios.post(`${API_URL}/auth/register`, data, {
+export const registerUser = async ({ username, password, email, avatar }) => {
+  const csrfRes = await getCsrfToken();
+  const csrfToken = csrfRes.csrfToken;
+
+  return axios.post(`${API_URL}/auth/register`, {
+    username,
+    password,
+    email,
+    avatar,
+    csrfToken,
+  }, {
     headers: {
       'Content-Type': 'application/json',
     },
+    withCredentials: true, // Needed if cookies/session are used
   });
 };
 
+export const loginUser = async ({ username, password }) => {
+  const csrfRes = await getCsrfToken(); // Fetch CSRF token
+  const csrfToken = csrfRes.csrfToken;
 
-export const loginUser = (data) => {
-  return axios.post(`${API_URL}/auth/token`, data, {
+  return axios.post(`${API_URL}/auth/token`, {
+    username,
+    password,
+    csrfToken,
+  }, {
     headers: {
       'Content-Type': 'application/json',
     },
+    withCredentials: true, // important if backend sets cookies
   });
 };
+
 
 // Meddelanden
 export const getMessages = () => api.get('/messages');

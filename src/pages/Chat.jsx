@@ -67,7 +67,9 @@ const Chat = () => {
         "I understand your question.",
         "Let me check that for you.",
         "That's a good point!",
+        "Please, provide mode details?",
         "We'll look into this issue.",
+        "Keep in touch, so long!",
         "Thanks for your feedback!"
       ];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
@@ -137,13 +139,18 @@ const Chat = () => {
         </div>
 
         <form className="message-form" onSubmit={handleSend}>
+          <label htmlFor="chat-message" className="visually-hidden">
+            Message
+          </label>
           <input
             type="text"
+            id="chat-message"
+            name="chatMessage"
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
             placeholder="Type your message..."
             disabled={isSending}
-            aria-label="Message input"
+            autoComplete="off"
           />
           <button 
             type="submit" 
@@ -153,6 +160,7 @@ const Chat = () => {
             {isSending ? 'Sending...' : 'Send'}
           </button>
         </form>
+
         <div className="chat-footer">
         © {new Date().getFullYear()} Chatify-k(munganga). All rights reserved.
       </div>
