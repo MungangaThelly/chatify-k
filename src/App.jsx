@@ -5,6 +5,7 @@ import ForgotPassword from './components/ForgotPassword';
 
 import Login from './pages/Login';
 import Register from './pages/Register';
+import ConversationsPage from './pages/ConversationsPage';
 import Chat from './pages/Chat';
 import Profile from './pages/Profile';
 
@@ -37,6 +38,7 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
 
         <Route path="/chat" element={<ProtectedRoute element={<Chat />} />} />
+        <Route path="/conversations" element={<ConversationsPage />} />
         <Route path="/profile" element={<ProtectedRoute element={<Profile />} />} />
 
         <Route path="/" element={<Navigate to={user ? '/chat' : '/login'} replace />} />

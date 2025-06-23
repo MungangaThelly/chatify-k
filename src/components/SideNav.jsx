@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { FaSignOutAlt, FaUser, FaComments } from 'react-icons/fa';
+import { FaSignOutAlt, FaUser, FaComments, FaInbox } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import './SideNav.css';
 
@@ -30,6 +30,11 @@ const SideNav = ({ activeItem }) => {
         <Link to="/chat" className={`nav-link ${activeItem === 'chat' ? 'active' : ''}`}>
           <FaComments className="icon" />
           <span>Chat</span>
+        </Link>
+
+        <Link to="/conversations" className={`nav-link ${activeItem === 'conversations' ? 'active' : ''}`}>
+          <FaInbox className="icon" />
+          <span>Conversations</span>
         </Link>
 
         <button className="logout-btn" onClick={handleLogout}>

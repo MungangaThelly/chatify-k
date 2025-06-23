@@ -39,42 +39,35 @@ export const getCsrfToken = async () => {
 
 // Auth
 export const registerUser = async ({ username, password, email, avatar }) => {
-  const csrfRes = await getCsrfToken();
-  const csrfToken = csrfRes.csrfToken;
+  const { csrfToken } = await getCsrfToken();
 
-  return axios.post(`${API_URL}/auth/register`, {
-    username,
-    password,
-    email,
-    avatar,
-    csrfToken,
-  }, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true, // Behövs om cookies/session används
-  });
+  return axios.post(
+    `${API_URL}/auth/register`,
+    { username, password, email, avatar, csrfToken },
+    {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
+    }
+  );
 };
 
 export const loginUser = async ({ username, password }) => {
-  const csrfRes = await getCsrfToken(); // Fetch CSRF token
-  const csrfToken = csrfRes.csrfToken;
+  const { csrfToken } = await getCsrfToken();
 
-  return axios.post(`${API_URL}/auth/token`, {
-    username,
-    password,
-    csrfToken,
-  }, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    withCredentials: true, // viktigt om backend sätter cookies
-  });
+  return axios.post(
+    `${API_URL}/auth/token`,
+    { username, password, csrfToken },
+    {
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
+    }
+  );
 };
 
 
+
 // Meddelanden
-export const getMessages = () => api.get('/messages');
+export const getMessages = () => api.get('/messages', { params});
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
