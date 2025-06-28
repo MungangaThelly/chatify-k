@@ -1,17 +1,9 @@
-.chat-container {
-  display: flex;
-  height: 100vh;
-  background-color: var(--light-gray);
-  position: relative; 
+:root {
+  --vh: 1vh; /* JS will override for Safari mobile fix */
 }
 
-.chat-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  height: 100vh; 
-  overflow: hidden; 
-}
+
+/* ========= Messages ========= */
 
 .messages-container {
   flex: 1;
@@ -25,9 +17,9 @@
   padding: 1rem;
   background-color: var(--white);
   border-top: 1px solid var(--medium-gray);
-  position: sticky; 
-  bottom: 0; 
-  z-index: 10; 
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
 }
 
 .chat-footer {
@@ -39,6 +31,7 @@
   color: var(--dark-gray);
 }
 
+/* ========= Message Bubbles ========= */
 
 .messages-list {
   display: flex;
@@ -135,15 +128,25 @@
   border: 0;
 }
 
-
+/* ========= Responsive Layout ========= */
 
 @media (max-width: 768px) {
+  .chat-content {
+    margin-left: 0;         /* Remove side offset for mobile view */
+    width: 100%;
+    padding: 0 8px;         /* Add side padding */
+  }
+
   .message {
     max-width: 85%;
   }
 }
 
 @media (max-width: 480px) {
+  .chat-content {
+    padding: 0 8px;
+  }
+
   .message {
     max-width: 90%;
   }
