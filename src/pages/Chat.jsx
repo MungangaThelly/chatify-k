@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import SideNav from '../components/SideNav';
-import './Chat.css';
+//import './Chat.css';
 
 const Chat = () => {
   const { user } = useAuth();
