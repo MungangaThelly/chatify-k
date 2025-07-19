@@ -9,15 +9,15 @@ const Chat = () => {
   const [newMsg, setNewMsg] = useState('');
   const [isSending, setIsSending] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);  // <-- ref pour l'input
 
-  // Fake användarens data
+  // Fake user data
   const fakeUser = {
     id: 'fake-user-123',
     username: 'Support',
     avatar: 'https://i.pravatar.cc/150?img=5'
   };
 
-  // Initialize with some fake messages
   useEffect(() => {
     const initialMessages = [
       {
@@ -42,12 +42,21 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  // Nouvel effet pour focus après envoi
+  useEffect(() => {
+    if (!isSending) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isSending]);
+
   const handleSend = async (e) => {
     e.preventDefault();
     const trimmed = newMsg.trim();
     if (!trimmed || isSending) return;
 
-    // Add user's message
     const userMessage = {
       id: Date.now().toString(),
       text: trimmed,
@@ -61,18 +70,18 @@ const Chat = () => {
     setMessages(prev => [...prev, userMessage]);
     setNewMsg('');
 
-    // Simulate response after a delay
+
     setTimeout(() => {
       const responses = [
-        "Here we are.","We did it.","Really — made it.","Through the noise, the doubt,","the days we almost quit."
-        ,"But we didn't.","Congratulations, genius.","(Not for being perfect but for staying.)","See?","It’s just a game.",
+        "Here we are.","We did it.","Really — made it.","Through the noise, the doubt,","the days we almost quit.",
+        "But we didn't.","Congratulations, genius.","(Not for being perfect but for staying.)","See?","It’s just a game.",
         "You win some, you learn some.","Play it.","Have fun.","Don’t forget to laugh when it all feels too heavy.",
         "Especially then.","This is it — Life.","Not the plan.","Not the past.","Just this breath.","This moment.",
         "Us, here.","And that’s enough.","I understand your question.","Let me check that for you.","That's a good point!",
         "Please, provide mode details?","We'll look into this issue.","Keep in touch, so long!","Thanks for your feedback!"
       ];
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
+
       const botMessage = {
         id: (Date.now() + 1).toString(),
         text: randomResponse,
@@ -84,7 +93,7 @@ const Chat = () => {
 
       setMessages(prev => [...prev, botMessage]);
       setIsSending(false);
-    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
+    }, 1000 + Math.random() * 2000);
   };
 
   const handleDelete = (id) => {
@@ -142,6 +151,7 @@ const Chat = () => {
             Message
           </label>
           <input
+            ref={inputRef}  // <-- ref ajoutée ici
             type="text"
             id="chat-message"
             name="chatMessage"
@@ -161,8 +171,8 @@ const Chat = () => {
         </form>
 
         <div className="chat-footer">
-        © {new Date().getFullYear()} Chatify-k(munganga). All rights reserved.
-      </div>
+          © {new Date().getFullYear()} Chatify-k(munganga). All rights reserved.
+        </div>
       </div>
     </div>
   );
