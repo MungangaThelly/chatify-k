@@ -88,6 +88,9 @@ const Register = () => {
       <div className="auth-footer">
         Har du redan ett konto? <Link to="/login">Logga in här</Link>
       </div>
+      <button onClick={() => navigate('/')} className="back-button">
+        ⬅ Till startsidan
+      </button>
     </div>
   );
 };

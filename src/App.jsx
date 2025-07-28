@@ -3,6 +3,7 @@ import { useAuth } from './context/AuthContext';
 import LoadingSpinner from './components/LoadingSpinner';
 import ForgotPassword from './components/ForgotPassword';
 
+import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ConversationsPage from './pages/ConversationsPage';
@@ -33,6 +34,7 @@ const App = () => {
   return (
     <Router>
       <Routes>
+        <Route path="/" element={<Home />} /> 
         <Route path="/login" element={<PublicRoute element={<Login />} />} />
         <Route path="/register" element={<PublicRoute element={<Register />} />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />

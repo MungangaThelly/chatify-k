@@ -112,7 +112,7 @@ const Login = () => {
               <span>Loggar in ...</span>
             </>
           ) : (
-            'Logga in och  låt oss chatta!'
+            'Logga in och låt oss chatta!'
           )}
         </button>
       </form>
@@ -129,6 +129,9 @@ const Login = () => {
             Glömt ditt lösenord?
           </Link>
         </p>
+      <button onClick={() => navigate('/')} className="back-button">
+        ⬅ Till startsidan
+      </button>
       </div>
     </div>
   );

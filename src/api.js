@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { getToken } from './utils/auth.js'; // justera path om filstruktur är annorlunda
+import { getToken } from './utils/auth.js'; 
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
