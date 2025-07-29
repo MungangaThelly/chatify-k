@@ -42,17 +42,17 @@ const Chat = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Nouvel effet pour focus après envoi
-  //useEffect(() => {
-   // if (!isSending) {
-   //   const timer = setTimeout(() => {
-   //     inputRef.current?.focus();
-   //   }, 0);
-   //   return () => clearTimeout(timer);
-   // }
-  //}, [isSending]);
+  // markoren focus bak efter
+  useEffect(() => {
+    if (!isSending) {
+      const timer = setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+      return () => clearTimeout(timer);
+    }
+  }, [isSending]);
 
-    const handleSend = async (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
     const trimmed = newMsg.trim();
     if (!trimmed || isSending) return;
@@ -70,25 +70,16 @@ const Chat = () => {
     setMessages(prev => [...prev, userMessage]);
     setNewMsg('');
 
-    // ✅ Immediately focus input while still inside user interaction
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 0);
 
-    // Simulate bot response
     setTimeout(() => {
       const responses = [
-        "Here we are.","We did it.","Really — made it.","Through the noise, the doubt,",
-        "the days we almost quit.","But we didn't.","Congratulations, genius.",
-        "(Not for being perfect but for staying.)","See?","It’s just a game.",
-        "You win some, you learn some.","Play it.","Have fun.",
-        "Don’t forget to laugh when it all feels too heavy.","Especially then.","This is it — Life.",
-        "Not the plan.","Not the past.","Just this breath.","This moment.","Us, here.",
-        "And that’s enough.","I understand your question.","Let me check that for you.",
-        "That's a good point!","Please, provide more details?","We'll look into this issue.",
-        "Keep in touch, so long!","Thanks for your feedback!"
+        "Here we are.","We did it.","Really — made it.","Through the noise, the doubt,","the days we almost quit.",
+        "But we didn't.","Congratulations, genius.","(Not for being perfect but for staying.)","See?","It’s just a game.",
+        "You win some, you learn some.","Play it.","Have fun.","Don’t forget to laugh when it all feels too heavy.",
+        "Especially then.","This is it — Life.","Not the plan.","Not the past.","Just this breath.","This moment.",
+        "Us, here.","And that’s enough.","I understand your question.","Let me check that for you.","That's a good point!",
+        "Please, provide mode details?","We'll look into this issue.","Keep in touch, so long!","Thanks for your feedback!"
       ];
-
       const randomResponse = responses[Math.floor(Math.random() * responses.length)];
 
       const botMessage = {
@@ -104,7 +95,6 @@ const Chat = () => {
       setIsSending(false);
     }, 1000 + Math.random() * 2000);
   };
-
 
   const handleDelete = (id) => {
     if (!window.confirm('Are you sure you want to delete this message?')) return;
