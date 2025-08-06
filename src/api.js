@@ -38,9 +38,7 @@ export const getCsrfToken = async () => {
 };
 
 // Auth
-export const registerUser = async ({ username, password, email, avatar }) => {
-  const { csrfToken } = await getCsrfToken();
-
+export const registerUser = async ({ username, password, email, avatar, csrfToken }) => {
   return axios.post(
     `${API_URL}/auth/register`,
     { username, password, email, avatar, csrfToken },
@@ -49,11 +47,12 @@ export const registerUser = async ({ username, password, email, avatar }) => {
       withCredentials: true,
     }
   );
+  
+  console.log('Svar från backend (api.js):', res);
+  return res;
 };
 
-export const loginUser = async ({ username, password }) => {
-  const { csrfToken } = await getCsrfToken();
-
+export const loginUser = async ({ username, password, csrfToken }) => {
   return axios.post(
     `${API_URL}/auth/token`,
     { username, password, csrfToken },
@@ -63,7 +62,6 @@ export const loginUser = async ({ username, password }) => {
     }
   );
 };
-
 
 
 // Meddelanden

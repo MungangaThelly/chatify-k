@@ -63,6 +63,31 @@ export const AuthProvider = ({ children }) => {
     initializeAuth();
   }, [validateToken]);
 
+
+  // Register function
+  const register = async (data) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await registerUser(data);
+      console.log('registerUser response:', res);
+
+      if (res.status>= 200 && res.status < 3000) {
+        return { success: true };
+      } else {
+        return { success: false, error: res.data?.message || 'Registreringen misslyckades.' };
+      }
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || err.message || 'Registration failed';
+      setError(errorMsg);
+      return { success: false, error: errorMsg };
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const login = async (credentials) => {
     setLoading(true);
     setError(null);
@@ -90,23 +115,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-
-  // Register function
-  const register = async (data) => {
-    setLoading(true);
-    setError(null);
-
-    try {
-      await registerUser(data);
-      return { success: true };
-    } catch (err) {
-      const errorMsg = err.response?.data?.message || err.message || 'Registration failed';
-      setError(errorMsg);
-      return { success: false, error: errorMsg };
-    } finally {
-      setLoading(false);
-    }
-  };
+  
 
   // Logout function
   const logout = useCallback(() => {

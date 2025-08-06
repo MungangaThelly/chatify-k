@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getCsrfToken } from '../api';
 import './Login.css';
 
 const Login = () => {
@@ -21,24 +22,31 @@ const Login = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+  e.preventDefault();
+  setError('');
+  setFormLoading(true);
 
-    if (!formData.username.trim() || !formData.password.trim()) {
-      setError('Användarnamn och lösenord krävs');
-      return;
+  try {
+    const { csrfToken } = await getCsrfToken();
+
+    const res = await login({ 
+      username: formData.username, 
+      password: formData.password, 
+      csrfToken 
+    });
+
+    if (res.success) {
+      navigate('/');
+    } else {
+      setError(res.error || 'Inloggning misslyckades.');
     }
+  } catch (err) {
+    setError('Ett fel inträffade vid inloggning.');
+  }
 
-    setError('');
-    setFormLoading(true);
+  setFormLoading(false);
+};
 
-    const result = await login(formData);
-
-    if (!result.success) {
-      setError(result.error || 'Inloggning misslyckades');
-    }
-
-    setFormLoading(false);
-  };
 
   useEffect(() => {
     if (!loading && user) {

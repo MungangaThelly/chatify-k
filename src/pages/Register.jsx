@@ -1,6 +1,17 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { getCsrfToken } from '../api';
+
+
+// Enkel toast-popup
+const Toast = ({ message }) => {
+  return (
+    <div className="toast">
+      {message}
+    </div>
+  );
+};
 
 const Register = () => {
   const { register } = useAuth();
@@ -22,19 +33,29 @@ const Register = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess(false);
-    setLoading(true);
+  e.preventDefault();
+  setError('');
+  setSuccess(false);
+  setLoading(true);
 
-    const res = await register(formData);
+  try {
+    // Fetch CSRF token once, explicitly
+    const { csrfToken } = await getCsrfToken();
+
+    const res = await register({ ...formData, csrfToken });
 
     if (res.success) {
-      setSuccess(true);
-      setTimeout(() => navigate('/login'), 2000);
-    } else {
-      // Visa exakt felmeddelande från API, t.ex. "Username or email already exists"
-      setError(res.error || 'Registreringen misslyckades.');
+        setShowToast(true); // visa popup
+        setTimeout(() => {
+          setShowToast(false);
+          navigate('/login'); // skicka vidare
+        }, 2000);
+      } else {
+        setError(res.error || 'Registreringen misslyckades.');
+      }
+    } catch (err) {
+      console.error('Registreringsfel:', err);
+      setError('Ett oväntat fel inträffade.');
     }
 
     setLoading(false);
