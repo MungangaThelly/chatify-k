@@ -1,12 +1,14 @@
 import axios from 'axios';
-import { getToken } from './utils/auth.js'; 
+import { getToken } from './utils/auth.js';
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
+// Axios instance with auth token
 const api = axios.create({
   baseURL: API_URL,
 });
 
+// Add Authorization header if token exists
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
@@ -15,6 +17,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// Redirect on 401 Unauthorized
 api.interceptors.response.use(
   res => res,
   err => {
@@ -27,32 +30,33 @@ api.interceptors.response.use(
   }
 );
 
+// CSRF instance
 const csrfApi = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
+// CSRF token fetch
 export const getCsrfToken = async () => {
   const res = await csrfApi.patch('/csrf');
   return res.data;
 };
 
-// Auth
+// 🔐 Auth
 export const registerUser = async ({ username, password, email, avatar, csrfToken }) => {
-  return axios.post(
-    `${API_URL}/auth/register`,
+  return api.post(
+    '/auth/register',
     { username, password, email, avatar, csrfToken },
     {
       headers: { 'Content-Type': 'application/json' },
       withCredentials: true,
     }
   );
-  
 };
 
 export const loginUser = async ({ username, password, csrfToken }) => {
-  return axios.post(
-    `${API_URL}/auth/token`,
+  return api.post(
+    '/auth/token',
     { username, password, csrfToken },
     {
       headers: { 'Content-Type': 'application/json' },
@@ -61,17 +65,15 @@ export const loginUser = async ({ username, password, csrfToken }) => {
   );
 };
 
-
-// Meddelanden
-export const getMessages = () => api.get('/messages', { params});
+// 💬 Messages
+export const getMessages = (params) => api.get('/messages', { params });
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
-// Konversations
+// 💭 Conversations
 export const getConversations = () => api.get('/conversations');
 
-
-// Användarna
+// 👤 Users
 export const getUsers = (params) => api.get('/users', { params });
 export const getUser = (userId) => api.get(`/users/${userId}`);
 export const updateUser = (data) => api.put('/user', data);
