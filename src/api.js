@@ -48,8 +48,6 @@ export const registerUser = async ({ username, password, email, avatar, csrfToke
     }
   );
   
-  console.log('Svar från backend (api.js):', res);
-  return res;
 };
 
 export const loginUser = async ({ username, password, csrfToken }) => {
