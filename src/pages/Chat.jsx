@@ -53,7 +53,7 @@ const Chat = () => {
           // Inject a simulated welcome message if chat is empty
           const welcomeMessage = {
             id: crypto.randomUUID(),
-            text: "👋 Hello! How can I help you today?",
+            text: "👋 Hello! Welcome how can I help you today?",
             userId: fakeBotUser.id,
             user: fakeBotUser,
             createdAt: new Date(),
