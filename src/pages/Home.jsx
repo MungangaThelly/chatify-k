@@ -2,21 +2,28 @@ import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import LoadingSpinner from '../components/LoadingSpinner';
-import './Home.css'
+import './Home.css';
 
 const Home = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  // Set page title
+  useEffect(() => {
+    document.title = 'Välkommen till Chatify-k';
+  }, []);
+
+  // Redirect if user is authenticated
   useEffect(() => {
     if (!loading && user) {
       navigate('/chat', { replace: true });
     }
   }, [user, loading, navigate]);
 
+  // Show loading spinner while auth is loading
   if (loading) {
     return (
-      <div className="loading-container">
+      <div className="loading-container" role="status" aria-live="polite">
         <div className="full-page-loader">
           <LoadingSpinner />
           <p>Laddar din session...</p>
@@ -25,10 +32,11 @@ const Home = () => {
     );
   }
 
+  // Render landing page
   return (
-    <div className="home-container">
-      <div className="auth-box">
-        <h2>Välkommen till Chatify-k!</h2>
+    <main className="home-container">
+      <section className="auth-box" aria-labelledby="welcome-heading">
+        <h1 id="welcome-heading">Välkommen till Chatify-k!</h1>
         <p>
           Chatify är din plattform för enkel och säker kommunikation. Chatta med vänner, familj
           eller kollegor i realtid med vårt användarvänliga gränssnitt.
@@ -38,11 +46,15 @@ const Home = () => {
           Gå med i Chatify idag och börja chatta!
         </p>
         <div className="button-group">
-          <Link to="/login" aria-label="Logga in på Chatify">Logga in</Link>
-          <Link to="/register" aria-label="Registrera dig på Chatify">Registrera dig</Link>
+          <Link to="/login" className="primary-button" aria-label="Logga in på Chatify">
+            Logga in
+          </Link>
+          <Link to="/register" className="secondary-button" aria-label="Registrera dig på Chatify">
+            Registrera dig
+          </Link>
         </div>
-      </div>
-    </div>
+      </section>
+    </main>
   );
 };
 

@@ -133,7 +133,7 @@ const Chat = () => {
     <div className="chat-container">
       <SideNav activeItem="chat" />
       <div className="chat-content">
-        <div className="chat-header"><h2>Support Chat</h2></div>
+        <div className="chat-header"><h2>Support Bot</h2></div>
 
         <div className="messages-container">
           <div className="messages-list" role="log" aria-live="polite">
