@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Memoized token validation
+  // Memoiserad tokenvalidering
   const validateToken = useCallback((token) => {
     try {
       const decoded = jwtDecode(token);
@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     }
   }, []);
 
-  // Load user from token/localStorage on mount
+  // Ladda användare från token/localStorage vid montering
   useEffect(() => {
     const initializeAuth = async () => {
       const token = localStorage.getItem(TOKEN_KEY);
@@ -64,7 +64,7 @@ export const AuthProvider = ({ children }) => {
   }, [validateToken]);
 
 
-  // Register function
+  // Registreringsfunktion
   const register = async (data) => {
     setLoading(true);
     setError(null);
@@ -117,7 +117,7 @@ export const AuthProvider = ({ children }) => {
 
   
 
-  // Logout function
+  // Utloggningsfunktion
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
