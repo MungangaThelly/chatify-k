@@ -82,9 +82,21 @@ const Chat = () => {
     }
   };
 
+  // Initial hämtning när conversationId ändras
   useEffect(() => {
     setParticipants([]);
     fetchMessages(conversationId);
+  }, [conversationId]);
+
+  // Kort polling: hämta meddelanden var 5:e sekund
+  useEffect(() => {
+    if (!conversationId) return;
+
+    const interval = setInterval(() => {
+      fetchMessages(conversationId);
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, [conversationId]);
 
   useEffect(() => {

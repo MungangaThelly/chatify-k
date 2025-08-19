@@ -56,9 +56,10 @@ const ConversationsPage = () => {
           <p className="empty-message">You have no conversations yet.</p>
         ) : (
           <ul className="conversation-list">
-            {conversations.map((id) => (
-              <li key={id} className="conversation-item">
-                Conversation ID: {id.slice(0, 8)}...
+            {conversations.map((inviteId) => (
+              <li key={inviteId} className="conversation-item">
+                <small>Invite ID: {inviteId}</small>
+                <button onClick={() => handleAcceptInvite(inviteId)}>Accept & Connect</button>
               </li>
             ))}
           </ul>
@@ -71,7 +72,7 @@ const ConversationsPage = () => {
           <ul className="invite-list">
             {invitesReceived.map((inviteId) => (
               <li key={inviteId} className="invite-item invite-received">
-                Invite ID: {inviteId.slice(0, 8)}...
+                <small>Invite ID: {inviteId}</small>
                 <button onClick={() => handleAcceptInvite(inviteId)}>Accept & Connect</button>
               </li>
             ))}
@@ -83,9 +84,10 @@ const ConversationsPage = () => {
           <p className="empty-message">No invites sent.</p>
         ) : (
           <ul className="invite-list">
-            {invitesSent.map((id) => (
-              <li key={id} className="invite-item invite-sent">
-                Invite Sent ID: {id.slice(0, 8)}...
+            {invitesSent.map((inviteId) => (
+              <li key={inviteId} className="invite-item invite-sent">
+                <small>Invite ID: {inviteId}</small>
+                <button onClick={() => handleAcceptInvite(inviteId)}>Accept & Connect</button>
               </li>
             ))}
           </ul>
