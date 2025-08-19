@@ -1,11 +1,27 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSignOutAlt, FaUser, FaComments, FaInbox } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import { useEffect, useState } from 'react';
+import { getConversations } from '../api';
 import './SideNav.css';
 
 const SideNav = ({ activeItem }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [conversations, setConversations] = useState([]);
+
+  useEffect(() => {
+    const fetchConvos = async () => {
+      try {
+        const res = await getConversations();
+        setConversations(res.data);
+      } catch (err) {
+        console.error('Error fetching conversations:', err);
+      }
+    };
+
+    fetchConvos();
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -42,6 +58,22 @@ const SideNav = ({ activeItem }) => {
           <span>Logout</span>
         </button>
       </div>
+
+      {/* ✅ Add conversation list below nav */}
+      {conversations.length > 0 && (
+        <div className="sidenav-conversations">
+          <h4>Your Conversations</h4>
+          <ul className="conversation-list">
+            {conversations.map((c) => (
+              <li key={c.id}>
+                <Link to={`/chat/${c.id}`}>
+                  {c.title || `Conversation ${c.id}`}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </nav>
   );
 };

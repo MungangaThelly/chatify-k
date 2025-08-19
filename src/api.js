@@ -70,7 +70,7 @@ export const getMessages = (params) => api.get('/messages', { params });
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
-// 💭 Konversationen
+// 💭 Konversationen 
 export const getConversations = () => api.get('/conversations');
 
 // 👤 Användaren

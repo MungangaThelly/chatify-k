@@ -1,88 +1,80 @@
 import { useEffect, useState, useRef } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SideNav from '../components/SideNav';
-import { getMessages, createMessage, deleteMessage } from '../api'; // Make sure these are correctly exported
+import { getMessages, createMessage, deleteMessage } from '../api';
 import './Chat.css';
 
 const Chat = () => {
   const { user } = useAuth();
+  const { conversationId } = useParams();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [isBotTyping, setIsBotTyping] = useState(false);
+  const [isBotActive, setIsBotActive] = useState(true);
+
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
 
-  // Simulated bot user
   const fakeBotUser = {
     id: 'bot-001',
     username: 'Support Bot',
     avatar: 'https://i.pravatar.cc/150?img=5',
   };
 
-  // Predefined bot replies
   const botResponses = [
     "I'm checking that for you.",
     "Could you give me more details?",
     "Thank you for reaching out!",
     "We're working on your issue.",
     "Please hold on a moment.",
-    "That’s a great question!",
+    "That's a great question!",
     "Let me escalate that to our team.",
     "You're doing great!",
     "Can I help you with anything else?",
     "Thanks for your patience!",
   ];
 
-  // Load messages from backend
-  const fetchMessages = async () => {
+  const fetchMessages = async (conversationId) => {
     try {
-      const response = await getMessages(); // Make sure it returns { data: [...] }
-      setMessages(response.data);
+      const response = await getMessages({ conversationId });
+      const data = response.data;
+
+      const localBotActive = localStorage.getItem(`botActive-${conversationId}`);
+      const isBotAllowed = localBotActive === null ? true : JSON.parse(localBotActive);
+      setIsBotActive(isBotAllowed);
+
+      if (data.length === 0 && isBotAllowed) {
+        const welcomeMessage = {
+          id: crypto.randomUUID(),
+          text: "👋 Hello! Welcome. How can I help you today?",
+          userId: fakeBotUser.id,
+          user: fakeBotUser,
+          createdAt: new Date(),
+        };
+        setMessages([welcomeMessage]);
+      } else {
+        setMessages(data);
+      }
     } catch (err) {
       console.error('Error fetching messages:', err);
     }
   };
 
   useEffect(() => {
-    const loadMessages = async () => {
-      try {
-        const response = await getMessages();
-        const data = response.data;
-
-        if (data.length === 0) {
-          // Inject a simulated welcome message if chat is empty
-          const welcomeMessage = {
-            id: crypto.randomUUID(),
-            text: "👋 Hello! Welcome how can I help you today?",
-            userId: fakeBotUser.id,
-            user: fakeBotUser,
-            createdAt: new Date(),
-          };
-          setMessages([welcomeMessage]);
-        } else {
-          setMessages(data);
-        }
-      } catch (err) {
-        console.error('Error loading messages:', err);
-      }
-    };
-
-    loadMessages();
-  }, []);
-
+    fetchMessages(conversationId);
+  }, [conversationId]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   useEffect(() => {
-    if (!isSending) {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 0);
-      return () => clearTimeout(timer);
+    if (!isSending && !isBotTyping) {
+      inputRef.current?.focus();
     }
-  }, [isSending]);
+  }, [isSending, isBotTyping]);
 
   const handleSend = async (e) => {
     e.preventDefault();
@@ -93,26 +85,38 @@ const Chat = () => {
     setNewMsg('');
 
     try {
-      // Send user's message
-      await createMessage({ text: trimmed });
-      await fetchMessages();   // Reload messages
+      await createMessage({ text: trimmed, conversationId });
+      await fetchMessages(conversationId);
 
-      // Simulate bot response after delay
-      setTimeout(() => {
-        const randomReply = botResponses[Math.floor(Math.random() * botResponses.length)];
+      if (isBotActive) {
+        setIsBotTyping(true);
 
-        const botMessage = {
-          id: crypto.randomUUID(),
-          text: randomReply,
-          userId: fakeBotUser.id,
-          user: fakeBotUser,
-          createdAt: new Date(),
-        };
+        setTimeout(() => {
+          const latestBotFlag = localStorage.getItem(`botActive-${conversationId}`);
+          const isStillBotActive = latestBotFlag === null ? true : JSON.parse(latestBotFlag);
 
-        setMessages(prev => [...prev, botMessage]);
-      }, 1000 + Math.random() * 1500);
+          if (!isStillBotActive) {
+            setIsBotTyping(false);
+            return;
+          }
+
+          const randomReply = botResponses[Math.floor(Math.random() * botResponses.length)];
+
+          const botMessage = {
+            id: crypto.randomUUID(),
+            text: randomReply,
+            userId: fakeBotUser.id,
+            user: fakeBotUser,
+            createdAt: new Date(),
+          };
+
+          setMessages(prev => [...prev, botMessage]);
+          setIsBotTyping(false);
+        }, 1000 + Math.random() * 1500);
+      }
     } catch (err) {
       console.error('Error sending or simulating bot response:', err);
+      setIsBotTyping(false);
     } finally {
       setIsSending(false);
     }
@@ -129,20 +133,52 @@ const Chat = () => {
     }
   };
 
+  const handleDisableBot = () => {
+    localStorage.setItem(`botActive-${conversationId}`, JSON.stringify(false));
+    setIsBotActive(false);
+    setIsBotTyping(false);
+  };
+
+  const handleEnableBot = () => {
+    localStorage.setItem(`botActive-${conversationId}`, JSON.stringify(true));
+    setIsBotActive(true);
+
+    const welcomeBackMessage = {
+      id: crypto.randomUUID(),
+      text: "✅ Bot re-enabled. I'm here to help again!",
+      userId: fakeBotUser.id,
+      user: fakeBotUser,
+      createdAt: new Date(),
+    };
+    setMessages(prev => [...prev, welcomeBackMessage]);
+  };
+
   return (
     <div className="chat-container">
       <SideNav activeItem="chat" />
       <div className="chat-content">
-        <div className="chat-header"><h2>Support Bot</h2></div>
+        <div className="bot-toggle-button">
+          {isBotActive ? (
+            <button className="disable-bot-button" onClick={handleDisableBot}>
+              Disable Bot
+            </button>
+          ) : (
+            <button className="enable-bot-button" onClick={handleEnableBot}>
+              Enable Bot
+            </button>
+          )}
+        </div>
 
         <div className="messages-container">
           <div className="messages-list" role="log" aria-live="polite">
             {messages.map((msg) => {
               const isOwn = msg.userId === user.id;
+              const isBot = msg.userId === fakeBotUser.id;
+
               return (
                 <div
                   key={msg.id}
-                  className={`message ${isOwn ? 'message-right' : 'message-left'}`}
+                  className={`message ${isOwn ? 'message-right' : 'message-left'} ${isBot ? 'message-bot' : ''}`}
                 >
                   {!isOwn && (
                     <div className="message-sender">{msg.user?.username || 'Support'}</div>
@@ -170,6 +206,20 @@ const Chat = () => {
                 </div>
               );
             })}
+
+            {isBotTyping && (
+              <div className="message message-left message-bot">
+                <div className="message-sender">{fakeBotUser.username}</div>
+                <div className="message-bubble">
+                  <div className="typing-indicator">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div ref={messagesEndRef} />
           </div>
         </div>
@@ -184,10 +234,14 @@ const Chat = () => {
             value={newMsg}
             onChange={(e) => setNewMsg(e.target.value)}
             placeholder="Type your message..."
-            disabled={isSending}
+            disabled={isSending || isBotTyping}
             autoComplete="off"
           />
-          <button type="submit" disabled={!newMsg.trim() || isSending} aria-label="Send message">
+          <button
+            type="submit"
+            disabled={!newMsg.trim() || isSending || isBotTyping}
+            aria-label="Send message"
+          >
             {isSending ? 'Sending...' : 'Send'}
           </button>
         </form>

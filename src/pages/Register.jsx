@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getCsrfToken } from '../api';
 
-
 // Enkel toast-popup
 const Toast = ({ message }) => {
   return (
@@ -27,28 +26,30 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);       // Ange synlighet för toast
+  const [toastMessage, setToastMessage] = useState('');    // Status för toast-meddelande
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setError('');
-  setSuccess(false);
-  setLoading(true);
+    e.preventDefault();
+    setError('');
+    setSuccess(false);
+    setLoading(true);
 
-  try {
-    // Fetch CSRF token once, explicitly
-    const { csrfToken } = await getCsrfToken();
+    try {
+      const { csrfToken } = await getCsrfToken();
+      const res = await register({ ...formData, csrfToken });
 
-    const res = await register({ ...formData, csrfToken });
-
-    if (res.success) {
-        setShowToast(true); // visa popup
+      if (res.success) {
+        setToastMessage('User registered successfully');  // Lägga toast message
+        setShowToast(true);                                // Visa toast popup
+        setSuccess(true);
         setTimeout(() => {
           setShowToast(false);
-          navigate('/login'); // skicka vidare
+          navigate('/login');                              // Omdirigera efter 2 seconds
         }, 2000);
       } else {
         setError(res.error || 'Registreringen misslyckades.');
@@ -67,6 +68,9 @@ const Register = () => {
 
       {error && <p className="error">⚠️ {error}</p>}
       {success && <p className="success">✅ Registrering lyckades! Du skickas till inloggningen...</p>}
+
+      {/* Toast popup */}
+      {showToast && <Toast message={toastMessage} />}
 
       <form onSubmit={handleSubmit} autoComplete="on">
         <input
