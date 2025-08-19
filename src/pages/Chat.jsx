@@ -40,7 +40,7 @@ const Chat = () => {
   ];
 
   const fetchParticipantsFromMessages = async (messages) => {
-    // Get unique userIds except bot
+    // Hämta unika användar-ID:n utom botar
     const uniqueUserIds = [...new Set(messages.map(m => m.userId))].filter(id => id !== fakeBotUser.id);
 
     try {
@@ -72,7 +72,7 @@ const Chat = () => {
           createdAt: new Date(),
         };
         setMessages([welcomeMessage]);
-        setParticipants([]); // no other users yet
+        setParticipants([]); // inga andra användare ännu
       } else {
         setMessages(data);
         await fetchParticipantsFromMessages(data);
