@@ -35,7 +35,7 @@ const ConversationsPage = () => {
 
   const goToChat = (conversationId, botActive = false) => {
     localStorage.setItem(`botActive-${conversationId}`, JSON.stringify(botActive));
-    navigate(`/chat/${conversationId}`);
+    navigate(`/chat`, { state: { conversationId: conversationId }});
   };
 
   const handleAcceptInvite = (inviteId) => {

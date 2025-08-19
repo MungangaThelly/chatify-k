@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SideNav from '../components/SideNav';
 import { getMessages, createMessage, deleteMessage } from '../api';
@@ -7,7 +7,7 @@ import './Chat.css';
 
 const Chat = () => {
   const { user } = useAuth();
-  const { conversationId } = useParams();
+  const location = useLocation();
   const [messages, setMessages] = useState([]);
   const [newMsg, setNewMsg] = useState('');
   const [isSending, setIsSending] = useState(false);
@@ -16,6 +16,8 @@ const Chat = () => {
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const { state } = location;
+  const conversationId = state?.conversationId;
 
   const fakeBotUser = {
     id: 'bot-001',
