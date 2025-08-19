@@ -3,12 +3,12 @@ import { getToken } from './utils/auth.js';
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
-// Axios instance with auth token
+// Axios instans med auth token
 const api = axios.create({
   baseURL: API_URL,
 });
 
-// Add Authorization header if token exists
+// Lägga Authorization header om token finns
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Redirect to login on 401 Unauthorized
+// Omdirigera till login om 401 Unauthorized
 api.interceptors.response.use(
   res => res,
   err => {
@@ -65,15 +65,15 @@ export const loginUser = async ({ username, password, csrfToken }) => {
   );
 };
 
-// 💬 Messages
+// 💬 Meddelanden
 export const getMessages = (params) => api.get('/messages', { params });
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
-// 💭 Conversations 
+// 💭 Konversationen
 export const getConversations = () => api.get('/conversations');
 
-// 👤 Users
+// 👤 Användaren
 export const getUsers = (params) => api.get('/users', { params });
 export const getUser = (userId) => api.get(`/users/${userId}`);
 export const updateUser = (data) => api.put('/user', data);

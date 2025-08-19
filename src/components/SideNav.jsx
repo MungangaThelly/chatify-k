@@ -58,8 +58,7 @@ const SideNav = ({ activeItem }) => {
           <span>Logout</span>
         </button>
       </div>
-
-      {/* ✅ Add conversation list below nav */}
+        
       {conversations.length > 0 && (
         <div className="sidenav-conversations">
           <h4>Your Conversations</h4>

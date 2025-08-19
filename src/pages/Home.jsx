@@ -8,19 +8,17 @@ const Home = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  // Set page title
   useEffect(() => {
     document.title = 'Välkommen till Chatify-k';
   }, []);
 
-  // Redirect if user is authenticated
+  // Omdirigera authenticerad användaren 
   useEffect(() => {
     if (!loading && user) {
       navigate('/chat', { replace: true });
     }
   }, [user, loading, navigate]);
 
-  // Show loading spinner while auth is loading
   if (loading) {
     return (
       <div className="loading-container" role="status" aria-live="polite">
@@ -32,7 +30,6 @@ const Home = () => {
     );
   }
 
-  // Render landing page
   return (
     <main className="home-container">
       <section className="auth-box" aria-labelledby="welcome-heading">

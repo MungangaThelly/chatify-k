@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { getCsrfToken } from '../api';
 
-// Enkel toast-popup
 const Toast = ({ message }) => {
   return (
     <div className="toast">
@@ -26,8 +25,8 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showToast, setShowToast] = useState(false);       // Ange synlighet för toast
-  const [toastMessage, setToastMessage] = useState('');    // Status för toast-meddelande
+  const [showToast, setShowToast] = useState(false);       
+  const [toastMessage, setToastMessage] = useState('');    
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -44,8 +43,8 @@ const Register = () => {
       const res = await register({ ...formData, csrfToken });
 
       if (res.success) {
-        setToastMessage('User registered successfully');  // Lägga toast message
-        setShowToast(true);                                // Visa toast popup
+        setToastMessage('User registered successfully');  
+        setShowToast(true);                                
         setSuccess(true);
         setTimeout(() => {
           setShowToast(false);
@@ -69,7 +68,6 @@ const Register = () => {
       {error && <p className="error">⚠️ {error}</p>}
       {success && <p className="success">✅ Registrering lyckades! Du skickas till inloggningen...</p>}
 
-      {/* Toast popup */}
       {showToast && <Toast message={toastMessage} />}
 
       <form onSubmit={handleSubmit} autoComplete="on">

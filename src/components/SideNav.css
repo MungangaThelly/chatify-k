@@ -100,7 +100,6 @@
   transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
-/* --------- Conversations List Styles --------- */
 .sidenav-conversations {
   margin-top: auto;
   padding: 0 1rem;
@@ -145,9 +144,8 @@
 }
 
 @media (max-width: 768px) {
-  /* Sidebar hidden by default: slide off left */
   .sidenav {
-    transform: translateX(-130px); /* slightly more than sidebar width to hide */
+    transform: translateX(-130px); 
     width: 150px;
     height: 100dvh;
     transition: transform 0.3s ease;
@@ -160,32 +158,27 @@
     flex-direction: column;
   }
 
-  /* On hover, slide sidebar back in */
   .sidenav:hover {
     transform: translateX(0);
   }
 
-  /* Adjust chat content margin */
   .chat-content {
-    margin-left: 20px !important;  /* small margin so content not flush left */
+    margin-left: 20px !important;  
     width: calc(100% - 20px) !important;
     transition: margin-left 0.3s ease, width 0.3s ease;
   }
 
-  /* When sidebar expanded on hover, push content */
   .sidenav:hover ~ .chat-content {
     margin-left: 150px !important;
     width: calc(100% - 150px) !important;
   }
 
-  /* Hide user info on small screens */
   .sidenav-user {
     display: none !important;
   }
 
-  /* Layout nav-links horizontally (if you want), or keep vertical */
   .sidenav-links {
-    flex-direction: column; /* keep vertical for better UX on hover */
+    flex-direction: column; 
   }
 
   .nav-link, .logout-btn {
@@ -198,7 +191,6 @@
     justify-content: flex-start;
   }
 
-  /* Show icons and text always */
   .nav-link span, .logout-btn span {
     display: inline;
   }
@@ -208,7 +200,6 @@
     font-size: 1rem;
   }
 
-  /* Hide conversations list */
   .sidenav-conversations {
     display: none;
   }
