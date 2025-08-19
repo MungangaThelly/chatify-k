@@ -2,13 +2,14 @@ import { useEffect, useState, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import SideNav from '../components/SideNav';
-import { getMessages, createMessage, deleteMessage } from '../api';
+import { getMessages, createMessage, deleteMessage, getUser } from '../api';
 import './Chat.css';
 
 const Chat = () => {
   const { user } = useAuth();
   const location = useLocation();
   const [messages, setMessages] = useState([]);
+  const [participants, setParticipants] = useState([]);
   const [newMsg, setNewMsg] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [isBotTyping, setIsBotTyping] = useState(false);
@@ -38,6 +39,21 @@ const Chat = () => {
     "Thanks for your patience!",
   ];
 
+  const fetchParticipantsFromMessages = async (messages) => {
+    // Get unique userIds except bot
+    const uniqueUserIds = [...new Set(messages.map(m => m.userId))].filter(id => id !== fakeBotUser.id);
+
+    try {
+      const users = await Promise.all(
+        uniqueUserIds.map(id => getUser(id).then(res => res.data))
+      );
+      setParticipants(users);
+    } catch (err) {
+      console.error('Error fetching participants:', err);
+      setParticipants([]);
+    }
+  };
+
   const fetchMessages = async (conversationId) => {
     try {
       const response = await getMessages({ conversationId });
@@ -56,8 +72,10 @@ const Chat = () => {
           createdAt: new Date(),
         };
         setMessages([welcomeMessage]);
+        setParticipants([]); // no other users yet
       } else {
         setMessages(data);
+        await fetchParticipantsFromMessages(data);
       }
     } catch (err) {
       console.error('Error fetching messages:', err);
@@ -65,6 +83,7 @@ const Chat = () => {
   };
 
   useEffect(() => {
+    setParticipants([]);
     fetchMessages(conversationId);
   }, [conversationId]);
 
@@ -183,7 +202,11 @@ const Chat = () => {
                   className={`message ${isOwn ? 'message-right' : 'message-left'} ${isBot ? 'message-bot' : ''}`}
                 >
                   {!isOwn && (
-                    <div className="message-sender">{msg.user?.username || 'Support'}</div>
+                    <div className="message-sender">
+                      {isBot
+                        ? fakeBotUser.username
+                        : participants.find(p => p.id === msg.userId)?.username || 'user'}
+                    </div>
                   )}
                   <div className="message-bubble">
                     <p>{msg.text}</p>

@@ -3,12 +3,12 @@ import { getToken } from './utils/auth.js';
 
 const API_URL = 'https://chatify-api.up.railway.app';
 
-// Axios instans with auth token
+// Axios instance with auth token
 const api = axios.create({
   baseURL: API_URL,
 });
 
-// Lägg till auktoriseringsrubrik om token finns
+// Add Authorization header if token exists
 api.interceptors.request.use((config) => {
   const token = getToken();
   if (token) {
@@ -17,7 +17,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Omdirigera vid 401 Obehörig
+// Redirect to login on 401 Unauthorized
 api.interceptors.response.use(
   res => res,
   err => {
@@ -30,13 +30,13 @@ api.interceptors.response.use(
   }
 );
 
-// CSRF instans
+// CSRF instance
 const csrfApi = axios.create({
   baseURL: API_URL,
   withCredentials: true,
 });
 
-// Hämta CSRF token 
+// Get CSRF token
 export const getCsrfToken = async () => {
   const res = await csrfApi.patch('/csrf');
   return res.data;
@@ -65,15 +65,15 @@ export const loginUser = async ({ username, password, csrfToken }) => {
   );
 };
 
-// 💬 Meddelanden
+// 💬 Messages
 export const getMessages = (params) => api.get('/messages', { params });
 export const createMessage = (msg) => api.post('/messages', msg);
 export const deleteMessage = (msgId) => api.delete(`/messages/${msgId}`);
 
-// 💭 Konversationen 
+// 💭 Conversations 
 export const getConversations = () => api.get('/conversations');
 
-// 👤 Användaren
+// 👤 Users
 export const getUsers = (params) => api.get('/users', { params });
 export const getUser = (userId) => api.get(`/users/${userId}`);
 export const updateUser = (data) => api.put('/user', data);
