@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 //import * as Sentry from '@sentry/react';
 //import './index.css';
-import { AuthProvider } from './context/AuthContext'; // om du använder context
+import { AuthProvider } from './context/AuthContextProvider'; // om du använder context
 
 /*Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,

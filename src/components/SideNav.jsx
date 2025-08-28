@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSignOutAlt, FaUser, FaComments, FaInbox } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import { useEffect, useState } from 'react';
 import { getConversations } from '../api';
 import './SideNav.css';

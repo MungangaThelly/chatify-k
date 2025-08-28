@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../context/useAuth';
 import SideNav from '../components/SideNav';
 import { getMessages, createMessage, deleteMessage, getUser } from '../api';
 import './Chat.css';
@@ -20,11 +20,11 @@ const Chat = () => {
   const { state } = location;
   const conversationId = state?.conversationId;
 
-  const fakeBotUser = {
+  const fakeBotUser = useMemo(() => ({
     id: 'bot-001',
     username: 'Support Bot',
     avatar: 'https://i.pravatar.cc/150?img=5',
-  };
+  }), []);
 
   const botResponses = [
     "I'm checking that for you.",
@@ -39,7 +39,7 @@ const Chat = () => {
     "Thanks for your patience!",
   ];
 
-  const fetchParticipantsFromMessages = async (messages) => {
+  const fetchParticipantsFromMessages = useCallback(async (messages) => {
     // Hämta unika användar-ID:n utom botar
     const uniqueUserIds = [...new Set(messages.map(m => m.userId))].filter(id => id !== fakeBotUser.id);
 
@@ -52,9 +52,9 @@ const Chat = () => {
       console.error('Error fetching participants:', err);
       setParticipants([]);
     }
-  };
+  }, [fakeBotUser.id]);
 
-  const fetchMessages = async (conversationId) => {
+  const fetchMessages = useCallback(async (conversationId) => {
     try {
       const response = await getMessages({ conversationId });
       const data = response.data;
@@ -80,13 +80,13 @@ const Chat = () => {
     } catch (err) {
       console.error('Error fetching messages:', err);
     }
-  };
+  }, [fakeBotUser, fetchParticipantsFromMessages]);
 
   // Initial hämtning när conversationId ändras
   useEffect(() => {
     setParticipants([]);
     fetchMessages(conversationId);
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   // Kort polling: hämta meddelanden var 5:e sekund
   useEffect(() => {
@@ -97,7 +97,7 @@ const Chat = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [conversationId]);
+  }, [conversationId, fetchMessages]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
